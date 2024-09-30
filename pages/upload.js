@@ -90,17 +90,15 @@ export default function UploadForm() {
 
   const handleFinish = async () => {
     if (!cid) return alert("CID is not set. Please upload a file first.");
-  
+
     try {
       const accounts = await web3.eth.getAccounts();
       const account = accounts[0];
-  
-      const gasLimit = 200000; // Set the desired gas limit here
-  
+
       const result = await Factory.methods
         .createUpload(cid, formData.datetime, formData.year, formData.name)
-        .send({ from: account, gas: gasLimit });
-  
+        .send({ from: account });
+
       alert("Transaction successful!");
       console.log(result);
     } catch (error) {
@@ -119,6 +117,14 @@ export default function UploadForm() {
       <Navbar />
       <div style={styles.container}>
         <form style={styles.form} onSubmit={handleFileUpload}>
+          <div>
+            {/* <style jsx>{`
+              h4 {
+              color: orange;
+              }
+            `}</style> */}
+            <h4>Choose a file to upload</h4>
+          </div>
           <input
             type="file"
             name="file"
@@ -162,10 +168,10 @@ export default function UploadForm() {
                   style={styles.input}
                 />
               </div>
-            </form>
-            <button onClick={handleFinish} style={styles.finishButton}>
+              <button type ="button" onClick={handleFinish} style={styles.finishButton}>
               Finish
             </button>
+            </form>
           </div>
         )}
       </div>
@@ -177,21 +183,27 @@ export default function UploadForm() {
 const styles = {
   container: {
     height: "100vh",
-    marginTop: "30px",
-    backgroundColor: "#2a2a2a",
+    width: "auto",
+    background: `url('/Desktop - 9.png') no-repeat center center`,
+    backgroundSize:"cover",
     padding: "20px",
   },
   form: {
+    border: "1px solid #e0e0e0",
+    backgroundColor: "#0a0617",
+    color:"#e0e0e0",
     marginTop: "80px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
   fileInput: {
+    display: "flex",
+    flexDirection: "column",
     marginBottom: "20px",
   },
   uploadButton: {
-    marginTop: "30px",
+    marginTop: "10px",
     color: "black",
     backgroundColor: "f0f0f0",
     border: "none",
@@ -200,12 +212,15 @@ const styles = {
     cursor: "pointer",
   },
   formContainer: {
-    marginTop: "40px",
+    marginTop: "20px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
   innerForm: {
+    border: "1px solid #e0e0e0",
+    backgroundColor: "#0a0617",
+    color:"#e0e0e0",
     display: "flex",
     flexDirection: "column",
     gap: "15px",
@@ -225,6 +240,7 @@ const styles = {
   },
   finishButton: {
     marginTop: "20px",
+    width:"auto",
     color: "black",
     backgroundColor: "f0f0f0",
     border: "none",

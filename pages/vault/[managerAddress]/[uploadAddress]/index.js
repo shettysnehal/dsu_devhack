@@ -18,7 +18,8 @@ const UploadDetails = ({ details, uploadAddress ,managerAddress}) => {
 
   const containerStyle = {
     padding: '80px',
-    backgroundColor: '#1a1a1a', /* Dark background for dark theme */
+    background: `url('/Desktop - 9.png') no-repeat center center`,
+    backgroundSize:"cover",
     color: '#e0e0e0', /* Light text color */
     minHeight: '100vh', /* Ensure container takes up full height */
     display: 'flex',
@@ -29,6 +30,7 @@ const UploadDetails = ({ details, uploadAddress ,managerAddress}) => {
   
   const cardStyle = {
     backgroundColor: '#2a2a2a',
+    border:'1px solid #62858d',
     borderRadius: '8px',
     color: '#e0e0e0',
     padding: '20px',
@@ -64,15 +66,17 @@ const UploadDetails = ({ details, uploadAddress ,managerAddress}) => {
   const buttonContainerStyle = {
     display: 'flex',
     flexDirection: 'row',
+    backgroundColor: "#0a0617",
     gap: '20px',
     alignItems: 'center',
-    width: '100%',
-    marginLeft: "400px" /* Full width container */
+    width: 'auto',
+    height: "90px",
   };
   
   const buttonStyle = {
     width: '200px',
     height: '60px',
+    borderRadius: '5px',
     color: "black", /* Fixed width for buttons */
   };
   
@@ -133,45 +137,52 @@ const UploadDetails = ({ details, uploadAddress ,managerAddress}) => {
   };
   
   
-  
   const checkForTampered = async () => {
     if (!userFile) {
-      alert('Please upload a file to compare.');
-      return;
+        alert('Please upload a file to compare.');
+        return;
     }
-  
+
     setLoading(true);
     try {
-      const uploadInstance = upload(uploadAddress);
-      const retrievedCid = await uploadInstance.methods.getCid().call();
-      console.log(retrievedCid)
-      // Create FormData and append file and CID
-      const formData = new FormData();
-      formData.append('file', userFile);
-      formData.append('ipfs_cid', retrievedCid);
-     console.log("hitha")
-      // Make the request with axios
-      const response = await axios.post('http://localhost:5000/compare', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      console.log(response)
-      // Handle response
-      if (response.data) {
-        setTampered(true);
-        alert("files identical")
-        console.log("done")
-      } else {
-        setTampered(false);
+        const uploadInstance = upload(uploadAddress);
+        const retrievedCid = await uploadInstance.methods.getCid().call();
+        const fetchedImageUrl = `https://gateway.lighthouse.storage/ipfs/${retrievedCid}`;
 
-      }
+        // Fetch the image from the fetched URL
+        const response = await axios.get(fetchedImageUrl, { responseType: 'blob' });
+        const fetchedImageBlob = response.data;
+
+        // Convert both images to Base64
+        const uploadedImageBase64 = await convertToBase64(userFile);
+        const fetchedImageBase64 = await convertToBase64(fetchedImageBlob);
+
+        // Compare images
+        if (uploadedImageBase64 === fetchedImageBase64) {
+            setTampered(true);
+            alert("Files are identical");
+            console.log("done");
+        } else {
+            setTampered(false);
+            alert("Files are not identical");
+        }
     } catch (error) {
-      console.error('Error during tampered check:', error);
+        console.error('Error during tampered check:', error);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
+
+// Function to convert a Blob or File to Base64
+const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+    });
+};
+
   
   
   const handleDelete = async () => {

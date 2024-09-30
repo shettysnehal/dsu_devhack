@@ -108,6 +108,7 @@ const Page = ({ imageUrl, mail, token, managerAddress, uploadAddress }) => {
     }
 
     try {
+      console.log(`mail is ${mail}`)
       const response = await axios.get("/api/sendMailForAuthorization", {
         params: {
           mail,
@@ -149,6 +150,7 @@ const Page = ({ imageUrl, mail, token, managerAddress, uploadAddress }) => {
             placeholder="Enter your name"
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
+            style={{width:'auto'}}
           />
           <button onClick={submitAuthorization}>Submit Authorization</button>
         </div>

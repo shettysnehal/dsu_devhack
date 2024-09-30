@@ -172,6 +172,9 @@ def process_image():
         aggregated_lines = aggregate_text_by_line(ocr_data)
 
         bounding_boxes = []
+        mask_after_keyword = False  # Flag to indicate whether to mask subsequent texts
+        keywords = ['address', 'पता']  # Keywords to trigger masking
+        
         for line in aggregated_lines:
             sentence = ' '.join([text for text, x, y, w, h in line])
             
@@ -181,10 +184,14 @@ def process_image():
             if dialogflow_response.get('fulfillmentText') == '1':
                 for text, x, y, w, h in line:
                     bounding_boxes.append((x, y, w, h))
-            keywords = ['address', 'पता']
+            
+            # Check for keywords and set the flag
             if any(keyword in sentence.lower() for keyword in keywords):
-                for _, x, y, w, h in line:
-                    # Expand the bounding box by 10 pixels and add it to bounding_boxes
+                mask_after_keyword = True
+            
+            # Mask all subsequent texts after the keyword is found
+            if mask_after_keyword:
+                for text, x, y, w, h in line:
                     bounding_boxes.append((x, y, w, h))
 
         # Convert image to PIL for masking
@@ -209,6 +216,5 @@ def process_image():
         return jsonify({"error": f"Request error: {e}"}), 500
     except Exception as e:
         return jsonify({"error": f"An error occurred: {e}"}), 500
-
 if __name__ == '__main__':
     app.run(debug=True)

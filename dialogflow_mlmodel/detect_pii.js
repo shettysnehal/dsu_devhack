@@ -1,9 +1,11 @@
 // Import the Dialogflow library
 const dialogflow = require('@google-cloud/dialogflow');
+const dotenv = require("dotenv")
+dotenv.config()
 
 // Instantiates a session client with your credentials
 const sessionClient = new dialogflow.SessionsClient({
-  keyFilename: process.env.DIALOGFLOW_KEY_FILE // Use environment variable if available
+  keyFilename: process.env.DIALOGFLOW_CREDENTIAL// Use path.join for cross-platform compatibility
 });
 
 // Function to detect intent

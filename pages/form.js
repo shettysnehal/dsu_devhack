@@ -15,62 +15,58 @@ const SignUpComponent = ({ setShowSignUp }) => {
   const router = useRouter();
 
   const handleSendOtp = async () => {
-    setLoadingSendOtp(true); // Start loader for sending OTP
     try {
       const accounts = await web3.eth.getAccounts();
-      const response = await axios.post("/api/sendotp", { email: email });
+      console.log(accounts[0])
+     
+      
+      const response = await axios.post("/api/sendotp", { email:email });
       const otp = response.data.otp;
-
-      // Save OTP on blockchain
+      console.log(otp)
+      
       await Factory.methods.setOtpForEmail(email, otp).send({ from: accounts[0] });
-
+      
       alert(`OTP sent to blockchain and email`);
-      console.log("OTP sent to blockchain and email");
+      console.log("OTP sent to blockchain and email")
     } catch (error) {
       console.error("Error sending OTP:", error);
       alert("Failed to send OTP.");
-    } finally {
-      setLoadingSendOtp(false); // Stop loader
-    }
-  };
-
-  const handleVerifyOtp = async () => {
-    setLoadingVerifyOtp(true); // Start loader for verifying OTP
-    try {
-      const accounts = await web3.eth.getAccounts();
-      const blockchainOtp = await Factory.methods.getOtpForEmail(email).call();
-      console.log(blockchainOtp);
-
-      // Compare the OTPs
-      if (Number(blockchainOtp) === Number(otp)) {
-        alert("OTP verified successfully!");
-        console.log("OTP verified");
-        await handleSetEmail(); 
-      } else {
-        alert("Invalid OTP. Please try again.");
+    }}
+    const handleVerifyOtp = async () => {
+      try {
+        const accounts = await web3.eth.getAccounts();
+       
+        const blockchainOtp = await Factory.methods.getOtpForEmail(email).call();
+        console.log(blockchainOtp)
+  
+        if (Number(blockchainOtp) === Number(otp)) {
+          alert("OTP verified successfully!");
+          console.log("otp verified")
+          await handleSetEmail(); 
+        } else {
+          alert("Invalid OTP. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error verifying OTP:", error);
+        alert("Failed to verify OTP.");
       }
-    } catch (error) {
-      console.error("Error verifying OTP:", error);
-      alert("Failed to verify OTP.");
-    } finally {
-      setLoadingVerifyOtp(false); // Stop loader
-    }
-  };
+    };
+    const handleSetEmail = async () => {
+      try {
+        const accounts = await web3.eth.getAccounts();
+        
+        await Factory.methods.setEmail(email).send({from:accounts[0]});
+        alert("Email successfully registered!");
+        console.log("Email successfully registered!")
+        localStorage.setItem("email",email)
+        router.push("/upload");
 
-  const handleSetEmail = async () => {
-    try {
-      const accounts = await web3.eth.getAccounts();
-      await Factory.methods.setEmail(email).send({ from: accounts[0] });
-      alert("Email successfully registered!");
-      console.log("Email successfully registered!");
-      localStorage.setItem("email", email);
-      router.push("/upload");
-    } catch (error) {
-      console.error("Error setting email:", error);
-      alert("Failed to register email.");
-    }
-  };
-
+      } catch (error) {
+        console.error("Error setting email:", error);
+        alert("Failed to register email.");
+      }
+    };
+  
 
   return (
     <>
@@ -92,7 +88,7 @@ const SignUpComponent = ({ setShowSignUp }) => {
               <div className="col-lg-6 mb-5 mb-lg-0">
                   
                     <form>
-                      <div className="form-outline mb-4">
+                      <div className="form-outline mb-4" style={{ marginTop: "1.5rem" }}>
                       
                         <input
                           type="email"

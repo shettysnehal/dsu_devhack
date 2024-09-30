@@ -1,6 +1,5 @@
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
-const dotenv = require("dotenv")
 
 const authorizationMail = async (
   email,
@@ -22,7 +21,7 @@ const authorizationMail = async (
   const locationLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
   
   // Updated subject line to include the location link properly
-  const subject = `${userName}  is asking for access. `;
+  const subject = `${userName} is asking for access. `;
   const text = `Please click the link below to grant access:\n\n${link}\n\n  location:${locationLink}`
 
   try {
@@ -32,7 +31,7 @@ const authorizationMail = async (
       secure: true,
       auth: {
         user: "shettysnehal105@gmail.com",
-        pass: process.env.mailpass,
+        pass: "odla ries jlop kvcs",
       },
     });
 
@@ -76,7 +75,7 @@ const sendMailForOtp = async (email) => {
       secure: true,
       auth: {
         user: "shettysnehal105@gmail.com",
-        pass: process.env.mailpass,
+        pass: "odla ries jlop kvcs",
       },
     });
 

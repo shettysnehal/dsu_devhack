@@ -18,7 +18,7 @@ const sendMailForAuthorization = async (req, res) => {
     const isDeleted = await Upload.methods.isDeleted().call();
 
     if (!isDeleted) {
-      const emailSent = await authorizationMail(
+      const mailSent = await authorizationMail(
         mail,
         managerAddress,
         uploadAddress,
@@ -27,10 +27,10 @@ const sendMailForAuthorization = async (req, res) => {
         location
       );
 
-      if (emailSent) {
-        res.json({ success: true, message: "Email sent successfully" });
+      if (mailSent) {
+        res.json({ success: true, message: "mail sent successfully" });
       } else {
-        res.status(500).json({ error: "Failed to send email" });
+        res.status(500).json({ error: "Failed to send mail" });
       }
     } else {
       res.json({
